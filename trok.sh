@@ -1,11 +1,17 @@
-
 #!/usr/bin/bash
 
 themes=("dark" "light")
 current_theme=0
 
-ALACRITTY_CONFIG="/home/andy/.config/alacritty/alacritty.toml"
+ALACRITTY_CONFIG="$HOME/.config/alacritty/alacritty.toml"
+NVIM_CONFIG="$HOME/.config/nvim/lua/config/theme.lua"
+POLYBAR_CONFIG="$HOME/.config/polybar/config.ini"
+
 alacritty=("~/.config/alacritty/dark.toml" "~/.config/alacritty/light.toml")
+polybar=("~/.config/polybar/dark.ini" "~/.config/polybar/light.ini")
+
+nvim_background=("dark" "light") 
+nvim_theme=("tokyonight" "alabaster")
 
 if [ -z $1 ]; then
 	echo "set - set current theme"
@@ -19,8 +25,18 @@ _set(){
 
 	echo "setting theme to:" $theme 
 
-	echo "general.import = ['"${alacritty[$index]}"']" > $ALACRITTY_CONFIG
-	echo "setting alacritty to:" $theme
+	# ALACRITTY CONFIG
+	echo "general.import = ['${alacritty[$index]}']" > $ALACRITTY_CONFIG
+	echo "setting alacritty to:" ${alacritty[$index]}
+
+	# NVIM CONFIG
+	sed -i "1s|.*|vim.o.background = \"${nvim_background[$index]}\"|" "$NVIM_CONFIG"
+	sed -i "2s|.*|vim.cmd.colorscheme(\"${nvim_theme[$index]}\")|" "$NVIM_CONFIG"
+	echo "setting nvim to: ${nvim_background[$index]} | ${nvim_theme[$index]}" 
+
+	# POLYBAR CONFIG
+	echo "include-file = ${polybar[$index]}" > $POLYBAR_CONFIG
+	echo "setting polybar theme to: ${polybar[$index]}"
 }
 
 _list(){
